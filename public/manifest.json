@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Solo Arise — Solo Leveling System",
+  "short_name": "Solo Arise",
+  "description": "Real-life Solo Leveling self-improvement system featuring Hunter rank progression, brutal discipline challenges, real space ambient audio, and Goggins AI coaching.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#05050F",
+  "theme_color": "#05050F",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

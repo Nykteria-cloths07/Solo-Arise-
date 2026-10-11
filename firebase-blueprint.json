@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Hunter user identity profile and metadata",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID matching the document path",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "description": "Authenticated hunter email address",
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Hunter display callsign or name",
+          "maxLength": 100
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "Hunter avatar URL",
+          "maxLength": 2048
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of account initialization",
+          "maxLength": 64
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last activity update",
+          "maxLength": 64
+        }
+      },
+      "required": ["userId", "email"]
+    },
+    "HunterSystemState": {
+      "title": "HunterSystemState",
+      "description": "Vault storing complete hunter stats, quests, habits, and progression",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the document owner",
+          "maxLength": 128
+        },
+        "hunter": {
+          "type": "object",
+          "description": "Hunter attributes, rank, level, xp, and status"
+        },
+        "dailyQuests": {
+          "type": "array",
+          "description": "Active daily discipline quests"
+        },
+        "challenges": {
+          "type": "array",
+          "description": "Multi-day trials and progression catalog"
+        },
+        "habits": {
+          "type": "array",
+          "description": "Active habits forged in the furnace"
+        },
+        "fallenHabits": {
+          "type": "array",
+          "description": "Relapsed habits recorded for accountability"
+        },
+        "focusSessions": {
+          "type": "array",
+          "description": "Productivity and Pomodoro focus intervals"
+        },
+        "researchNotes": {
+          "type": "array",
+          "description": "Hunter lore and discipline observations"
+        },
+        "settings": {
+          "type": "object",
+          "description": "Audio, SFX, and user UI configurations"
+        },
+        "recovery": {
+          "type": "object",
+          "description": "Recovery mode logs and cooldowns"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp string of state synchronization",
+          "maxLength": 64
+        }
+      },
+      "required": ["userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Hunter user account profile document"
+    },
+    "/users/{userId}/system_data/{dataId}": {
+      "schema": "HunterSystemState",
+      "description": "User hunter progression, stats, and activity vault"
+    }
+  }
+}

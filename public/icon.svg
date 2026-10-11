@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="voidCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0E1A40" />
+      <stop offset="60%" stop-color="#050716" />
+      <stop offset="100%" stop-color="#010207" />
+    </radialGradient>
+    <linearGradient id="monarchGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="50%" stop-color="#3A7BFF" />
+      <stop offset="100%" stop-color="#141E55" />
+    </linearGradient>
+    <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Deep Void Shield -->
+  <rect width="512" height="512" rx="110" fill="url(#voidCore)" />
+
+  <!-- Outer Runed Diamond Portal -->
+  <polygon points="256,32 480,256 256,480 32,256" fill="none" stroke="#162758" stroke-width="4" stroke-dasharray="14 10" />
+  <polygon points="256,54 458,256 256,458 54,256" fill="none" stroke="#00F0FF" stroke-width="3" opacity="0.85" filter="url(#bloom)" />
+
+  <!-- Tech Brackets (System UI) -->
+  <path d="M140,190 L95,256 L140,322" stroke="#00F0FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#bloom)" />
+  <path d="M372,190 L417,256 L372,322" stroke="#00F0FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#bloom)" />
+
+  <!-- Monarch Shadow Core Blade -->
+  <path d="M256,90 L296,256 L256,420 L216,256 Z" fill="url(#monarchGlow)" filter="url(#bloom)" />
+  <line x1="256" y1="120" x2="256" y2="390" stroke="#FFFFFF" stroke-width="4.5" filter="url(#bloom)" />
+
+  <!-- Twin Glowing Monarch Eyes -->
+  <ellipse cx="205" cy="235" rx="30" ry="11" transform="rotate(-18 205 235)" fill="#00F0FF" filter="url(#bloom)" />
+  <ellipse cx="307" cy="235" rx="30" ry="11" transform="rotate(18 307 235)" fill="#00F0FF" filter="url(#bloom)" />
+  <circle cx="205" cy="235" r="5" fill="#FFFFFF" />
+  <circle cx="307" cy="235" r="5" fill="#FFFFFF" />
+
+  <!-- Center Mana Node -->
+  <circle cx="256" cy="256" r="14" fill="#FFFFFF" filter="url(#bloom)" />
+
+  <!-- Sub Text -->
+  <text x="256" y="470" font-family="'Orbitron', sans-serif" font-size="22" font-weight="900" fill="#00F0FF" text-anchor="middle" letter-spacing="10">SYSTEM</text>
+</svg>

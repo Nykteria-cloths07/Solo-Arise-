@@ -1,0 +1,6 @@
+{
+  "name": "Solo Arise",
+  "description": "Real-life Solo Leveling self-improvement system featuring Hunter rank progression, brutal discipline challenges, real space ambient audio, and Goggins AI coaching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
