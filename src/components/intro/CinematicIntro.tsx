@@ -73,44 +73,97 @@ export const CinematicIntro: React.FC = () => {
   >('multiverse_scan');
 
   const [scanIndex, setScanIndex] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [readingSpeed, setReadingSpeed] = useState<'normal' | 'slow' | 'manual'>('normal');
+  const [scanProgress, setScanProgress] = useState<number>(0);
+  const [audioEngaged, setAudioEngaged] = useState<boolean>(false);
   const [declineCountdown, setDeclineCountdown] = useState<string>('0.02');
 
-  useEffect(() => {
-    // Start authentic deep space ambience immediately
-    if (settings.ambientSound) {
-      spaceAudio.startSpaceAmbient();
+  // Activate authentic pulse star sound on intro launch or user gesture
+  const activateIntroSound = async () => {
+    try {
+      const unlocked = await spaceAudio.unlockAudio();
+      setAudioEngaged(true);
+      if (settings.ambientSound) {
+        spaceAudio.startSpaceAmbient();
+      }
+      if (settings.sfxSound) {
+        spaceAudio.playPulseStarArrival();
+      }
+    } catch (e) {
+      console.warn('Audio activation failed:', e);
     }
+  };
 
-    // Step 1: Multiverse anime scanning progression
-    const scanInterval = setInterval(() => {
+  useEffect(() => {
+    // Attempt immediate start
+    activateIntroSound();
+
+    const handleGesture = () => {
+      activateIntroSound();
+      window.removeEventListener('click', handleGesture);
+      window.removeEventListener('touchstart', handleGesture);
+      window.removeEventListener('pointerdown', handleGesture);
+    };
+
+    window.addEventListener('click', handleGesture, { once: true });
+    window.addEventListener('touchstart', handleGesture, { once: true });
+    window.addEventListener('pointerdown', handleGesture, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handleGesture);
+      window.removeEventListener('touchstart', handleGesture);
+      window.removeEventListener('pointerdown', handleGesture);
+    };
+  }, [settings.ambientSound, settings.sfxSound]);
+
+  // Duration based on reading speed setting (giving hunters ample time to read)
+  const scanDuration = readingSpeed === 'slow' ? 8000 : 5500;
+
+  // Deliberate, comfortable multiverse scanning progression with live progress bar
+  useEffect(() => {
+    if (phase !== 'multiverse_scan' || isPaused || readingSpeed === 'manual') return;
+
+    setScanProgress(0);
+    const intervalMs = 50;
+    const stepPercent = (intervalMs / scanDuration) * 100;
+
+    const progressTimer = setInterval(() => {
+      setScanProgress((prev) => Math.min(100, prev + stepPercent));
+    }, intervalMs);
+
+    const stepTimer = setTimeout(() => {
       setScanIndex((prev) => {
         if (prev < MULTIVERSE_SCANS.length - 1) {
-          if (settings.sfxSound) spaceAudio.playTap();
+          if (settings.sfxSound) spaceAudio.playSystemChime();
           return prev + 1;
         } else {
-          clearInterval(scanInterval);
-          // Transition to Weak Hunter Detection!
-          setTimeout(() => {
-            setPhase('weak_detection');
-            if (settings.sfxSound) spaceAudio.playPenalty();
-          }, 800);
+          // Transition to Weak Hunter Detection after final character is read
+          setPhase('weak_detection');
+          if (settings.sfxSound) {
+            // Pulse star arrival resonance for double dungeon transition (no buzz!)
+            spaceAudio.playPulseStarArrival();
+          }
           return prev;
         }
       });
-    }, 900);
+    }, scanDuration);
 
-    return () => clearInterval(scanInterval);
-  }, [settings.ambientSound, settings.sfxSound]);
+    return () => {
+      clearInterval(progressTimer);
+      clearTimeout(stepTimer);
+    };
+  }, [phase, scanIndex, isPaused, readingSpeed, scanDuration, settings.sfxSound]);
 
-  // Transition from Weak Detection to System Window
+  // Extended Weak Detection reading window (7.0 seconds so hunters can absorb every word)
   useEffect(() => {
     if (phase === 'weak_detection') {
       const timer = setTimeout(() => {
         setPhase('system_prompt');
         if (settings.sfxSound) {
-          spaceAudio.playSystemChime();
+          spaceAudio.playPulseStarArrival();
         }
-      }, 2600);
+      }, 7000);
       return () => clearTimeout(timer);
     }
   }, [phase, settings.sfxSound]);
@@ -172,42 +225,67 @@ export const CinematicIntro: React.FC = () => {
       {/* Subtle floating blue particle grid */}
       <div className="absolute inset-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,#00e5ff15_1px,transparent_1px),linear-gradient(to_bottom,#00e5ff15_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]" />
 
-      {/* Top Bar with SKIP Button */}
-      <div className="absolute top-5 left-5 right-5 flex items-center justify-between z-30">
+      {/* Top Bar with Audio Control and SKIP Button */}
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-30 gap-2">
         <div className="flex items-center gap-2">
-          <SystemLogo size={28} glow={false} />
-          <span className="text-[10px] text-slate-400 font-mono tracking-widest hidden sm:inline-block">
+          <SystemLogo size={28} glow={true} />
+          <span className="text-[10px] text-cyan-300 font-mono tracking-widest hidden sm:inline-block">
             [SYS.PROTOCOL // MULTIVERSE APEX SCAN]
           </span>
         </div>
 
-        <button
-          onClick={handleComplete}
-          className="px-4 py-2 rounded-xl border border-[#1A2548] bg-[#0A0D22]/90 text-xs text-slate-300 hover:text-white hover:border-[#00E5FF] transition-all flex items-center gap-1.5 shadow-md"
-        >
-          <span>SKIP INTRO</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Audio State / Unlocker Button */}
+          <button
+            onClick={activateIntroSound}
+            className={`px-3 py-1.5 rounded-xl border text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm ${
+              audioEngaged
+                ? 'border-cyan-500/60 bg-cyan-950/70 text-cyan-300'
+                : 'border-amber-500/70 bg-amber-950/60 text-amber-300 animate-pulse'
+            }`}
+            title="Click to engage or test real-life celestial pulse star sound"
+          >
+            <Radio className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
+            <span>{audioEngaged ? 'PULSE AUDIO: ON' : 'ACTIVATE AUDIO'}</span>
+          </button>
+
+          <button
+            onClick={handleComplete}
+            className="px-3.5 py-1.5 rounded-xl border border-[#1A2548] bg-[#0A0D22]/90 text-xs text-slate-300 hover:text-white hover:border-[#00E5FF] transition-all flex items-center gap-1.5 shadow-md"
+          >
+            <span>SKIP INTRO</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* =========================================================================
           PHASE 1: MULTIVERSE SCAN (Traveling through strongest anime characters)
           ========================================================================= */}
       {phase === 'multiverse_scan' && (
-        <div className="relative z-10 w-full max-w-lg bg-[#06091F]/90 border border-[#1A2548] rounded-2xl p-6 sm:p-7 backdrop-blur-xl glow-blue shadow-2xl space-y-5 text-center">
-          <div className="w-14 h-14 rounded-2xl border-2 border-[#00E5FF] bg-[#00E5FF]/10 mx-auto flex items-center justify-center glow-blue text-[#00E5FF]">
-            <Radio className="w-7 h-7 animate-pulse" />
+        <div className="relative z-10 w-full max-w-lg bg-[#06091F]/90 border border-[#1A2548] rounded-2xl p-5 sm:p-7 backdrop-blur-xl glow-blue shadow-2xl space-y-4 text-center">
+          
+          {/* Live Progress Bar for Comfortable Reading Pace */}
+          <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden border border-[#1A2548]">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-[#00E5FF] transition-all duration-100"
+              style={{ width: `${isPaused ? scanProgress : scanProgress}%` }}
+            />
+          </div>
+
+          <div className="w-13 h-13 rounded-2xl border-2 border-[#00E5FF] bg-[#00E5FF]/10 mx-auto flex items-center justify-center glow-blue text-[#00E5FF]">
+            <Radio className="w-6 h-6 animate-pulse" />
           </div>
 
           <div className="space-y-1">
             <span className="text-[11px] font-mono uppercase tracking-widest text-[#00E5FF] font-bold">
               [ DIMENSIONAL VESSEL EVALUATION ]
             </span>
-            <h2 className="font-orbitron font-extrabold text-xl sm:text-2xl text-white tracking-wide">
+            <h2 className="font-orbitron font-extrabold text-lg sm:text-2xl text-white tracking-wide">
               SCANNING MULTIVERSE FOR THE SOVEREIGN...
             </h2>
             <p className="text-xs text-slate-400 font-mono">
-              The System seeks a vessel capable of infinite discipline and growth.
+              The System evaluates fiction's apex entities before finding Sung Jinwoo.
             </p>
           </div>
 
@@ -231,17 +309,73 @@ export const CinematicIntro: React.FC = () => {
           {/* Progress dots */}
           <div className="flex items-center justify-center gap-1.5 pt-1">
             {MULTIVERSE_SCANS.map((_, i) => (
-              <span
+              <button
                 key={i}
-                className={`w-2 h-2 rounded-full transition-all ${
+                onClick={() => {
+                  if (settings.sfxSound) spaceAudio.playSystemChime();
+                  setScanIndex(i);
+                }}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
                   i === scanIndex
                     ? 'bg-[#00E5FF] shadow-[0_0_8px_#00E5FF] scale-125'
                     : i < scanIndex
                     ? 'bg-slate-600'
                     : 'bg-slate-900'
                 }`}
+                title={`Jump to scan ${i + 1}`}
               />
             ))}
+          </div>
+
+          {/* Reading Controls & Pace Adjuster */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#141B3B]">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => {
+                  if (settings.sfxSound) spaceAudio.playTap();
+                  setScanIndex((prev) => Math.max(0, prev - 1));
+                }}
+                disabled={scanIndex === 0}
+                className="px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-[11px] font-mono text-slate-300 hover:text-white disabled:opacity-40"
+              >
+                PREV
+              </button>
+
+              <button
+                onClick={() => setIsPaused((prev) => !prev)}
+                className="px-3 py-1.5 rounded-lg border border-cyan-800/60 bg-cyan-950/40 text-[11px] font-mono text-cyan-300 hover:text-white"
+              >
+                {isPaused ? '▶ RESUME' : '⏸ PAUSE TO READ'}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {/* Reading Pace Toggle */}
+              <button
+                onClick={() => setReadingSpeed((prev) => (prev === 'normal' ? 'slow' : prev === 'slow' ? 'manual' : 'normal'))}
+                className="px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900/50 text-[10px] font-mono text-slate-300 hover:text-white"
+                title="Toggle Reading Pace (Normal 5.5s / Slow 8s / Manual)"
+              >
+                PACE: {readingSpeed.toUpperCase()}
+              </button>
+
+              <button
+                onClick={() => {
+                  if (settings.sfxSound) spaceAudio.playTap();
+                  if (scanIndex < MULTIVERSE_SCANS.length - 1) {
+                    setScanIndex((prev) => prev + 1);
+                  } else {
+                    setPhase('weak_detection');
+                    if (settings.sfxSound) {
+                      spaceAudio.playPulseStarArrival();
+                    }
+                  }
+                }}
+                className="px-3 py-1.5 rounded-lg border border-cyan-500/60 bg-cyan-950/60 text-[11px] font-mono font-bold text-[#00E5FF] hover:bg-[#00E5FF] hover:text-black transition-all"
+              >
+                NEXT ›
+              </button>
+            </div>
           </div>
         </div>
       )}

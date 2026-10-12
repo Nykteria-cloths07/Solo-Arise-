@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const handleManualSync = async () => {
     setIsLoading(true);
     setErrorMessage(null);
-    if (settings.sfxSound) spaceAudio.playChime();
+    if (settings.sfxSound) spaceAudio.playQuestComplete();
 
     try {
       await syncToCloud();
@@ -100,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const handleRestore = async () => {
     setIsLoading(true);
     setErrorMessage(null);
-    if (settings.sfxSound) spaceAudio.playDeepBoom();
+    if (settings.sfxSound) spaceAudio.playSystemChime();
 
     try {
       await loadFromCloud();

@@ -56,9 +56,33 @@ class SpaceSoundEngine {
       this.sfxGain.connect(this.masterGain);
     }
 
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
     }
+  }
+
+  /**
+   * Unlock Web Audio context on user gesture (iOS Safari + Chrome mobile compliant)
+   */
+  public async unlockAudio(): Promise<boolean> {
+    try {
+      this.initContext();
+      if (this.ctx) {
+        if (this.ctx.state === 'suspended') {
+          await this.ctx.resume();
+        }
+        // Play an imperceptible 1-sample silent buffer to unlock iOS Safari Web Audio hardware
+        const buffer = this.ctx.createBuffer(1, 1, 22050);
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.ctx.destination);
+        source.start(0);
+        return true;
+      }
+    } catch (e) {
+      console.warn('Audio unlock warning:', e);
+    }
+    return false;
   }
 
   // Generate pink/brown cosmic background radiation buffer
@@ -316,6 +340,95 @@ class SpaceSoundEngine {
   // =========================================================================
 
   /**
+   * Resume audio context on user gesture
+   */
+  public async resumeAudioContext(): Promise<void> {
+    this.initContext();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      await this.ctx.resume();
+    }
+  }
+
+  /**
+   * SFX: Authentic Pulsar Star Arrival (Cosmic Neutron Star Resonance)
+   * Real celestial pulse star arrival:
+   * - Smooth sub-harmonic gravity well resonance (56Hz -> 36Hz, pure sine)
+   * - Rhythmic Neutron Star Pulsar Beams (crisp cosmological pulse chirps)
+   * - Ethereal crystalline celestial harmonics (pure resonance, zero buzz)
+   */
+  public playPulseStarArrival() {
+    this.initContext();
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+
+    const now = this.ctx.currentTime;
+
+    // 1. Celestial Gravity Well (Deep velvety sub-harmonic sine wave, completely smooth)
+    const gravityOsc = this.ctx.createOscillator();
+    const gravityGain = this.ctx.createGain();
+    gravityOsc.type = 'sine';
+    gravityOsc.frequency.setValueAtTime(56, now);
+    gravityOsc.frequency.exponentialRampToValueAtTime(34, now + 1.8);
+
+    gravityGain.gain.setValueAtTime(0.0001, now);
+    gravityGain.gain.linearRampToValueAtTime(0.45, now + 0.12);
+    gravityGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
+
+    gravityOsc.connect(gravityGain);
+    gravityGain.connect(this.sfxGain);
+    gravityOsc.start(now);
+    gravityOsc.stop(now + 2.5);
+
+    // 2. Rhythmic Neutron Star Pulsar Beams (3 pure crystalline cosmological pulses)
+    const pulseIntervals = [0.06, 0.26, 0.48];
+    const frequencies = [880, 1174, 1568]; // Crystalline astronomical triad
+    pulseIntervals.forEach((offset, idx) => {
+      const pulseOsc = this.ctx!.createOscillator();
+      const pulseFilter = this.ctx!.createBiquadFilter();
+      const pulseGain = this.ctx!.createGain();
+
+      pulseOsc.type = 'sine';
+      pulseOsc.frequency.setValueAtTime(frequencies[idx], now + offset);
+      pulseOsc.frequency.exponentialRampToValueAtTime(frequencies[idx] * 0.45, now + offset + 0.18);
+
+      pulseFilter.type = 'bandpass';
+      pulseFilter.frequency.setValueAtTime(frequencies[idx] * 0.75, now + offset);
+      pulseFilter.Q.setValueAtTime(3.2, now + offset);
+
+      pulseGain.gain.setValueAtTime(0.0001, now + offset);
+      pulseGain.gain.linearRampToValueAtTime(0.32 / (idx * 0.3 + 1), now + offset + 0.012);
+      pulseGain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.42);
+
+      pulseOsc.connect(pulseFilter);
+      pulseFilter.connect(pulseGain);
+      pulseGain.connect(this.sfxGain!);
+
+      pulseOsc.start(now + offset);
+      pulseOsc.stop(now + offset + 0.45);
+    });
+
+    // 3. Ethereal Interstellar Aurora Harmonic Shimmer (Crystal bell resonance)
+    const shimmerNotes = [1760.0, 2349.32, 3135.96];
+    shimmerNotes.forEach((freq, i) => {
+      const shimmerOsc = this.ctx!.createOscillator();
+      const shimmerGain = this.ctx!.createGain();
+      shimmerOsc.type = 'sine';
+      shimmerOsc.frequency.setValueAtTime(freq, now + 0.18 + i * 0.06);
+
+      shimmerGain.gain.setValueAtTime(0.0001, now + 0.18 + i * 0.06);
+      shimmerGain.gain.linearRampToValueAtTime(0.14 / (i + 1), now + 0.22 + i * 0.06);
+      shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+      shimmerOsc.connect(shimmerGain);
+      shimmerGain.connect(this.sfxGain!);
+      shimmerOsc.start(now + 0.18 + i * 0.06);
+      shimmerOsc.stop(now + 2.1);
+    });
+  }
+
+  /**
    * SFX: Solo Leveling System Quest Notification Chime
    * The iconic [TIING-G-G] holographic window popup heard in Episode 1 & 2.
    */
@@ -512,21 +625,25 @@ class SpaceSoundEngine {
     if (!this.ctx || !this.sfxGain || this.isMuted) return;
 
     const now = this.ctx.currentTime;
+    // Deep ominous void drop (smooth sine waves, zero buzz or vibration)
     const osc1 = this.ctx.createOscillator();
     const osc2 = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc1.type = 'sawtooth';
-    osc2.type = 'sawtooth';
-    osc1.frequency.setValueAtTime(68, now);
-    osc2.frequency.setValueAtTime(96.2, now); // Tritone devil's interval (Dissonance)
+    osc1.type = 'sine';
+    osc2.type = 'triangle';
+    osc1.frequency.setValueAtTime(80, now);
+    osc1.frequency.exponentialRampToValueAtTime(32, now + 1.6);
+    osc2.frequency.setValueAtTime(60, now);
+    osc2.frequency.exponentialRampToValueAtTime(28, now + 1.6);
 
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(320, now);
+    filter.frequency.setValueAtTime(180, now);
 
-    gain.gain.setValueAtTime(0.42, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.9);
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.38, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.9);
 
     osc1.connect(filter);
     osc2.connect(filter);

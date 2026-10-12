@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSystem } from '../../context/SystemContext';
 import { spaceAudio } from '../../audio/spaceAudio';
 import { DisciplineConsistencyChart } from './DisciplineConsistencyChart';
+import { DisciplineStreakCard } from './DisciplineStreakCard';
 import { AvatarCustomizerModal } from '../common/AvatarCustomizerModal';
 import { FocusSessionModal } from '../focus/FocusSessionModal';
 import { AuthModal } from '../auth/AuthModal';
@@ -221,6 +222,9 @@ export const Dashboard: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* DISCIPLINE STREAK COUNTER & MILESTONES */}
+      <DisciplineStreakCard />
 
       {/* 3. QUICK STATS CARDS & SHORTCUTS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
