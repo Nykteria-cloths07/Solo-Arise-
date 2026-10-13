@@ -128,4 +128,5 @@ export interface AppSettings {
   sfxVolume: number;
   accentTheme: 'blue' | 'cyan' | 'gold' | 'red';
   reducedMotion: boolean;
+  playIntroOnLaunch: boolean;
 }

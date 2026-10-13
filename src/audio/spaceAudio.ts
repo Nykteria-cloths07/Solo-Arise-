@@ -516,6 +516,269 @@ class SpaceSoundEngine {
   }
 
   /**
+   * SFX: Authentic Solo Leveling Anime System Notification Chime
+   * The exact crystalline floating blue window bell alert from the anime:
+   * - Dual pristine high bell harmonics (2637Hz & 3951Hz - E7/B7)
+   * - Secondary crystal sparkle (5274Hz)
+   * - Holographic sub-bass impact (48Hz)
+   */
+  public playSoloLevelingNotificationChime() {
+    this.initContext();
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+
+    const now = this.ctx.currentTime;
+
+    // High crystalline bell tones
+    const bellFrequencies = [2637.02, 3951.07, 5274.04];
+    bellFrequencies.forEach((freq, idx) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.025);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.25 / (idx + 1), now + idx * 0.025 + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.025 + 0.85);
+
+      osc.connect(gain);
+      gain.connect(this.sfxGain!);
+      osc.start(now + idx * 0.025);
+      osc.stop(now + idx * 0.025 + 0.9);
+    });
+
+    // Holographic digital shimmer chord
+    const shimmerNotes = [880, 1318.5, 1760];
+    shimmerNotes.forEach((f) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now + 0.03);
+      gain.gain.setValueAtTime(0.0001, now + 0.03);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+
+      osc.connect(gain);
+      gain.connect(this.sfxGain!);
+      osc.start(now + 0.03);
+      osc.stop(now + 0.6);
+    });
+
+    // Deep sub-pulse anchor
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(58, now);
+    subOsc.frequency.exponentialRampToValueAtTime(32, now + 0.45);
+    subGain.gain.setValueAtTime(0.35, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+    subOsc.connect(subGain);
+    subGain.connect(this.sfxGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.52);
+  }
+
+  /**
+   * SFX: Character Energy Aura Surge (Triggered per anime character scan)
+   */
+  public playAnimeCharacterVoiceBurst(characterId: string) {
+    this.initContext();
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+
+    const now = this.ctx.currentTime;
+
+    switch (characterId) {
+      case 'goku': {
+        // Divine God Ki pulse & high frequency spark
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.35);
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(700, now);
+        filter.Q.setValueAtTime(3.5, now);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.42);
+        break;
+      }
+      case 'gojo': {
+        // Spatial distortion warp (Limitless spatial frequency bend)
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(380, now);
+        osc1.frequency.exponentialRampToValueAtTime(120, now + 0.4);
+        osc2.frequency.setValueAtTime(385, now); // 5Hz beat frequency
+        osc2.frequency.exponentialRampToValueAtTime(124, now + 0.4);
+
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.sfxGain);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.46);
+        osc2.stop(now + 0.46);
+        break;
+      }
+      case 'saitama': {
+        // Sub-bass physical shockwave & clean comical whoosh
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.3);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.38);
+        break;
+      }
+      case 'luffy': {
+        // Drums of Liberation rhythmic double bounce
+        [0, 0.12].forEach((offset) => {
+          const osc = this.ctx!.createOscillator();
+          const g = this.ctx!.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(220, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(70, now + offset + 0.1);
+          g.gain.setValueAtTime(0.28, now + offset);
+          g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.12);
+          osc.connect(g);
+          g.connect(this.sfxGain!);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.13);
+        });
+        break;
+      }
+      case 'ichigo': {
+        // Getsuga Tenshou metallic blade ring & spiritual pressure
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(950, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.32);
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, now);
+        filter.Q.setValueAtTime(6.0, now);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.36);
+        break;
+      }
+      case 'gilgamesh': {
+        // Gate of Babylon golden treasury ringing chimes
+        [1567.98, 2093.0, 2793.83].forEach((f, i) => {
+          const osc = this.ctx!.createOscillator();
+          const g = this.ctx!.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now + i * 0.04);
+          g.gain.setValueAtTime(0.18 / (i + 1), now + i * 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.4);
+          osc.connect(g);
+          g.connect(this.sfxGain!);
+          osc.start(now + i * 0.04);
+          osc.stop(now + i * 0.04 + 0.42);
+        });
+        break;
+      }
+      case 'rimuru': {
+        // Slime waterdrop ripple & synthesis sparkle
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1400, now + 0.12);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.3);
+        break;
+      }
+      default:
+        this.playSystemChime();
+        break;
+    }
+  }
+
+  private systemCarrierOsc: OscillatorNode | null = null;
+  private systemCarrierGain: GainNode | null = null;
+
+  /**
+   * Start subtle cybernetic vocoder carrier drone while Solo Leveling System Voice speaks
+   */
+  public startSystemVoiceCarrier() {
+    this.initContext();
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+    this.stopSystemVoiceCarrier();
+
+    try {
+      const now = this.ctx.currentTime;
+      this.systemCarrierOsc = this.ctx.createOscillator();
+      this.systemCarrierGain = this.ctx.createGain();
+
+      this.systemCarrierOsc.type = 'sine';
+      this.systemCarrierOsc.frequency.setValueAtTime(440, now);
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(660, now);
+      filter.Q.setValueAtTime(4.0, now);
+
+      this.systemCarrierGain.gain.setValueAtTime(0.001, now);
+      this.systemCarrierGain.gain.linearRampToValueAtTime(0.04, now + 0.05);
+
+      this.systemCarrierOsc.connect(filter);
+      filter.connect(this.systemCarrierGain);
+      this.systemCarrierGain.connect(this.sfxGain);
+
+      this.systemCarrierOsc.start();
+    } catch {}
+  }
+
+  /**
+   * Stop system voice carrier drone
+   */
+  public stopSystemVoiceCarrier() {
+    if (this.systemCarrierGain && this.ctx) {
+      try {
+        const now = this.ctx.currentTime;
+        this.systemCarrierGain.gain.linearRampToValueAtTime(0.0001, now + 0.05);
+      } catch {}
+    }
+    if (this.systemCarrierOsc) {
+      try {
+        this.systemCarrierOsc.stop(this.ctx ? this.ctx.currentTime + 0.06 : 0);
+      } catch {}
+      this.systemCarrierOsc = null;
+      this.systemCarrierGain = null;
+    }
+  }
+
+  /**
    * SFX: ARISE / Rank Promotion (Tectonic Shadow Boom + Ascending Monarch Choir)
    */
   public playArise() {

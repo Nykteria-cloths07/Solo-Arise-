@@ -306,22 +306,28 @@ export const SettingsScreen: React.FC = () => {
           {/* Test Sound Triggers */}
           <div className="flex flex-wrap gap-2 pt-2">
             <button
-              onClick={() => spaceAudio.playSystemChime()}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-cyan-300 hover:text-white hover:border-[#00E5FF]"
+              onClick={() => spaceAudio.playSoloLevelingNotificationChime()}
+              className="px-3 py-1.5 rounded-lg border border-cyan-500/80 bg-cyan-950/60 text-xs font-mono text-[#00E5FF] hover:bg-[#00E5FF] hover:text-black transition-all cursor-pointer shadow-sm"
             >
-              🔊 Test System Chime
+              🔔 Solo Leveling Bell Chime
+            </button>
+            <button
+              onClick={() => spaceAudio.playSystemChime()}
+              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-cyan-300 hover:text-white hover:border-[#00E5FF] cursor-pointer"
+            >
+              🔊 System Chime
             </button>
             <button
               onClick={() => spaceAudio.playArise()}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-amber-300 hover:text-white hover:border-amber-500"
+              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-amber-300 hover:text-white hover:border-amber-500 cursor-pointer"
             >
-              ⚡ Test ARISE Boom
+              ⚡ ARISE Boom
             </button>
             <button
               onClick={() => spaceAudio.playPenalty()}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-red-300 hover:text-white hover:border-red-500"
+              className="px-3 py-1.5 rounded-lg border border-slate-700 bg-[#0A0D22] text-xs font-mono text-red-300 hover:text-white hover:border-red-500 cursor-pointer"
             >
-              ⚠️ Test Penalty Alarm
+              ⚠️ Void Pulse
             </button>
           </div>
         </div>
@@ -336,13 +342,40 @@ export const SettingsScreen: React.FC = () => {
           </h3>
         </div>
 
+        {/* Toggle Play on Launch */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#141B3B]">
+          <div>
+            <span className="text-xs font-mono font-bold text-white block">
+              Play Anime Animation on Every App Launch
+            </span>
+            <span className="text-[11px] font-mono text-[#8899BB]">
+              Launches the Multiverse apex scan and System Voice narration whenever you open the app daily.
+            </span>
+          </div>
+
+          <button
+            onClick={() => {
+              if (settings.sfxSound) spaceAudio.playTap();
+              updateSettings({ playIntroOnLaunch: settings.playIntroOnLaunch === false ? true : false });
+            }}
+            className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all cursor-pointer ${
+              settings.playIntroOnLaunch !== false
+                ? 'border-[#00E5FF] bg-[#00E5FF]/20 text-[#00E5FF]'
+                : 'border-slate-800 bg-slate-900 text-slate-400'
+            }`}
+          >
+            {settings.playIntroOnLaunch !== false ? 'ENABLED' : 'DISABLED'}
+          </button>
+        </div>
+
+        {/* Replay Button */}
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-mono font-bold text-white block">
-              Replay Double Dungeon Cartenon Temple Awakening
+              Watch Double Dungeon Awakening Now
             </span>
             <span className="text-[11px] font-mono text-[#8899BB]">
-              Experience the 0.02-second heart-stopping decision and player qualification.
+              Experience the anime legend scans, cold System Voice, and 0.02s heart-stopping Player selection.
             </span>
           </div>
 
@@ -351,9 +384,9 @@ export const SettingsScreen: React.FC = () => {
               if (settings.sfxSound) spaceAudio.playTap();
               setShowCinematicIntro(true);
             }}
-            className="px-4 py-2 rounded-xl border border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF] font-orbitron font-bold text-xs hover:bg-[#00E5FF]/20 flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl border border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF] font-orbitron font-bold text-xs hover:bg-[#00E5FF]/20 flex items-center gap-1.5 cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5" />
+            <Play className="w-3.5 h-3.5 fill-[#00E5FF]" />
             <span>PLAY INTRO</span>
           </button>
         </div>

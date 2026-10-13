@@ -427,6 +427,7 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sfxVolume: 0.6,
         accentTheme: 'blue',
         reducedMotion: false,
+        playIntroOnLaunch: true,
       };
     } catch {
       return {
@@ -436,6 +437,7 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sfxVolume: 0.6,
         accentTheme: 'blue',
         reducedMotion: false,
+        playIntroOnLaunch: true,
       };
     }
   });
@@ -445,8 +447,17 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(() => {
-    // Only show intro if never awakened or explicitly requested
-    return localStorage.getItem(`${STORAGE_KEY}_AWAKENED`) !== 'true';
+    // Always launch cinematic intro on every app opening / daily session
+    try {
+      const saved = localStorage.getItem(`${STORAGE_KEY}_SETTINGS`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.playIntroOnLaunch === false) {
+          return false;
+        }
+      }
+    } catch {}
+    return true; // Active on every app open!
   });
 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
