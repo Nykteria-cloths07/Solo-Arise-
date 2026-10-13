@@ -279,17 +279,17 @@ const SystemContext = createContext<SystemContextType | null>(null);
 export function getRankPercentileLabel(rank: HunterRank): string {
   switch (rank) {
     case 'E':
-      return 'BOTTOM 90% (CRUCIBLE OF THE WEAK)';
+      return 'BOTTOM 90% (THE WEAKEST HUNTER CRUCIBLE)';
     case 'D':
       return 'TOP 35% DISCIPLINE THRESHOLD';
     case 'C':
       return 'TOP 15% HARDENED HUNTER';
     case 'B':
-      return 'TOP 5% HIGH-TIER AWAKENED';
+      return 'TOP 5.0% HIGH-TIER AWAKENED';
     case 'A':
       return 'TOP 2.0% ELITE SLAYER';
     case 'S':
-      return 'TOP 1.0% SUPERHUMAN ANOMALY';
+      return 'TOP 1.0% SUPERHUMAN ANOMALY (EXTREME HARD)';
     case 'NATIONAL':
       return 'TOP 0.1% PLANETARY SOVEREIGN';
     case 'SHADOW_MONARCH':
@@ -298,18 +298,19 @@ export function getRankPercentileLabel(rank: HunterRank): string {
 }
 
 function calculateRankFromLevel(lvl: number): HunterRank {
-  if (lvl >= 350) return 'SHADOW_MONARCH';
-  if (lvl >= 271) return 'NATIONAL';
-  if (lvl >= 201) return 'S';
-  if (lvl >= 141) return 'A';
-  if (lvl >= 91) return 'B';
-  if (lvl >= 51) return 'C';
-  if (lvl >= 21) return 'D';
-  return 'E';
+  if (lvl >= 600) return 'SHADOW_MONARCH'; // Top 0.001%
+  if (lvl >= 450) return 'NATIONAL';       // Top 0.1%
+  if (lvl >= 300) return 'S';              // Top 1.0% (Extreme Hard struggle!)
+  if (lvl >= 180) return 'A';              // Top 2.0%
+  if (lvl >= 100) return 'B';              // Top 5.0%
+  if (lvl >= 50) return 'C';               // Top 15.0%
+  if (lvl >= 20) return 'D';               // Top 35.0%
+  return 'E';                              // Bottom 90%
 }
 
 function calculateNextLevelXp(lvl: number): number {
-  return Math.floor(180 + 35 * Math.pow(lvl, 1.42));
+  // Extreme Discipline Overload curve: leveling up requires relentless daily consistency
+  return Math.floor(280 + 65 * Math.pow(lvl, 1.65));
 }
 
 export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -1042,40 +1043,40 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const rank = hunter.rank;
 
     let minLvl = 1;
-    let nextLvl = 21;
+    let nextLvl = 20;
     let nextR: HunterRank | 'MAX' = 'D';
 
     if (rank === 'E') {
       minLvl = 1;
-      nextLvl = 21;
+      nextLvl = 20;
       nextR = 'D';
     } else if (rank === 'D') {
-      minLvl = 21;
-      nextLvl = 51;
+      minLvl = 20;
+      nextLvl = 50;
       nextR = 'C';
     } else if (rank === 'C') {
-      minLvl = 51;
-      nextLvl = 91;
+      minLvl = 50;
+      nextLvl = 100;
       nextR = 'B';
     } else if (rank === 'B') {
-      minLvl = 91;
-      nextLvl = 141;
+      minLvl = 100;
+      nextLvl = 180;
       nextR = 'A';
     } else if (rank === 'A') {
-      minLvl = 141;
-      nextLvl = 201;
+      minLvl = 180;
+      nextLvl = 300;
       nextR = 'S';
     } else if (rank === 'S') {
-      minLvl = 201;
-      nextLvl = 271;
+      minLvl = 300;
+      nextLvl = 450;
       nextR = 'NATIONAL';
     } else if (rank === 'NATIONAL') {
-      minLvl = 271;
-      nextLvl = 350;
+      minLvl = 450;
+      nextLvl = 600;
       nextR = 'SHADOW_MONARCH';
     } else {
-      minLvl = 350;
-      nextLvl = 350;
+      minLvl = 600;
+      nextLvl = 600;
       nextR = 'MAX';
     }
 

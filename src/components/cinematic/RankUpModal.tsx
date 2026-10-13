@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useSystem } from '../../context/SystemContext';
+import { useSystem, getRankPercentileLabel } from '../../context/SystemContext';
 import { spaceAudio } from '../../audio/spaceAudio';
 import confetti from 'canvas-confetti';
-import { Shield, Sparkles, ChevronRight } from 'lucide-react';
+import { Shield, Sparkles, ChevronRight, Award } from 'lucide-react';
 
 export const RankUpModal: React.FC = () => {
   const { rankUpEvent, clearRankUpEvent, hunter, settings } = useSystem();
@@ -17,14 +17,14 @@ export const RankUpModal: React.FC = () => {
     try {
       // Dual confetti cannons
       confetti({
-        particleCount: 100,
-        spread: 100,
+        particleCount: 120,
+        spread: 120,
         origin: { x: 0.2, y: 0.5 },
         colors: ['#00E5FF', '#4D9FFF', '#FFD700', '#FFFFFF'],
       });
       confetti({
-        particleCount: 100,
-        spread: 100,
+        particleCount: 120,
+        spread: 120,
         origin: { x: 0.8, y: 0.5 },
         colors: ['#00E5FF', '#4D9FFF', '#FFD700', '#FFFFFF'],
       });
@@ -65,8 +65,11 @@ export const RankUpModal: React.FC = () => {
           <p className="font-rajdhani text-lg sm:text-xl text-[#00E5FF] font-semibold mt-1">
             {rankUpEvent.oldRank}-RANK → {rankUpEvent.newRank}-RANK
           </p>
+          <div className="mt-2 inline-block px-3 py-1 rounded-full border border-cyan-500/80 bg-cyan-950/70 text-cyan-300 font-mono text-xs font-bold shadow-sm glow-blue">
+            {getRankPercentileLabel(rankUpEvent.newRank)}
+          </div>
           <p className="font-rajdhani text-base text-[#8899BB] max-w-md mx-auto mt-3 leading-relaxed">
-            &ldquo;You are no longer the weakest hunter. The mana density in your blood has increased. All physical stats permanently upgraded.&rdquo;
+            &ldquo;You have conquered the crucible that breaks 99% of mankind. The mana density in your blood has increased. All physical stats permanently upgraded.&rdquo;
           </p>
         </div>
 

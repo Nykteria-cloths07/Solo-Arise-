@@ -84,14 +84,14 @@ export const HunterLicense: React.FC = () => {
   };
 
   const rankTimeline = [
-    { rank: 'E', label: 'E-Rank', achieved: true, percentile: 'Bottom 90% (Crucible)' },
-    { rank: 'D', label: 'D-Rank', achieved: hunter.level >= 21, percentile: 'Top 35% Vessel' },
-    { rank: 'C', label: 'C-Rank', achieved: hunter.level >= 51, percentile: 'Top 15% Hardened' },
-    { rank: 'B', label: 'B-Rank', achieved: hunter.level >= 91, percentile: 'Top 5% Vanguard' },
-    { rank: 'A', label: 'A-Rank', achieved: hunter.level >= 141, percentile: 'Top 2.0% Slayer' },
-    { rank: 'S', label: 'S-Rank', achieved: hunter.level >= 201, percentile: 'Top 1.0% Superhuman' },
-    { rank: 'NATIONAL', label: 'National', achieved: hunter.level >= 271, percentile: 'Top 0.1% Sovereign' },
-    { rank: 'SHADOW_MONARCH', label: 'Shadow Monarch', achieved: hunter.level >= 350, percentile: 'Top 0.001% Transcendent' },
+    { rank: 'E', label: 'E-Rank', achieved: true, percentile: 'Bottom 90% (Crucible of the Weak)' },
+    { rank: 'D', label: 'D-Rank', achieved: hunter.level >= 20, percentile: 'Top 35% Breakthrough (Level 20)' },
+    { rank: 'C', label: 'C-Rank', achieved: hunter.level >= 50, percentile: 'Top 15% Hardened (Level 50)' },
+    { rank: 'B', label: 'B-Rank', achieved: hunter.level >= 100, percentile: 'Top 5.0% Crucible Veteran (Level 100)' },
+    { rank: 'A', label: 'A-Rank', achieved: hunter.level >= 180, percentile: 'Top 2.0% Elite Slayer (Level 180)' },
+    { rank: 'S', label: 'S-Rank', achieved: hunter.level >= 300, percentile: 'Top 1.0% Superhuman Anomaly (Level 300 — EXTREME HARD)' },
+    { rank: 'NATIONAL', label: 'National', achieved: hunter.level >= 450, percentile: 'Top 0.1% Planetary Apex (Level 450)' },
+    { rank: 'SHADOW_MONARCH', label: 'Shadow Monarch', achieved: hunter.level >= 600, percentile: 'Top 0.001% Transcendent Sovereign (Level 600)' },
   ];
 
   return (

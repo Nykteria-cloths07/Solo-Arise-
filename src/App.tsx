@@ -20,6 +20,8 @@ import { SettingsScreen } from './components/settings/SettingsScreen';
 import { NotificationsModal } from './components/notifications/NotificationsModal';
 import { RankUpModal } from './components/cinematic/RankUpModal';
 
+import { TerminalScreenTransition } from './components/common/TerminalScreenTransition';
+
 const AppContent: React.FC = () => {
   const { isAwakened, showCinematicIntro, activeTab } = useSystem();
 
@@ -47,17 +49,19 @@ const AppContent: React.FC = () => {
       {/* Top Bar Header Contract */}
       <Header />
 
-      {/* Dynamic Screen View */}
-      <main className="flex-1 relative z-10">
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'quests' && <QuestLog />}
-        {activeTab === 'habits' && <HabitForge />}
-        {activeTab === 'ai-coach' && <AICoach />}
-        {activeTab === 'gate' && <GateLibrary />}
-        {activeTab === 'license' && <HunterLicense />}
-        {activeTab === 'stats' && <HunterStatus />}
-        {activeTab === 'settings' && <SettingsScreen />}
-        {activeTab === 'notifications' && <NotificationsModal />}
+      {/* Military-Grade Terminal Holographic Glitch Screen Transition */}
+      <main className="flex-1 relative z-10 flex flex-col">
+        <TerminalScreenTransition activeTab={activeTab}>
+          {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'quests' && <QuestLog />}
+          {activeTab === 'habits' && <HabitForge />}
+          {activeTab === 'ai-coach' && <AICoach />}
+          {activeTab === 'gate' && <GateLibrary />}
+          {activeTab === 'license' && <HunterLicense />}
+          {activeTab === 'stats' && <HunterStatus />}
+          {activeTab === 'settings' && <SettingsScreen />}
+          {activeTab === 'notifications' && <NotificationsModal />}
+        </TerminalScreenTransition>
       </main>
 
       {/* Mobile-Friendly Fixed Bottom Navigation Bar */}

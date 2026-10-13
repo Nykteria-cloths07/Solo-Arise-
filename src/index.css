@@ -98,3 +98,113 @@
   background: #4D9FFF;
 }
 
+/* =========================================================================
+   MILITARY-GRADE HOLOGRAPHIC GLITCH SYSTEM TERMINAL TRANSITIONS
+   ========================================================================= */
+
+@keyframes holoTerminalGlitch {
+  0% {
+    opacity: 0.8;
+    transform: translateY(-3px) skewX(2.8deg) scale(0.994);
+    filter: brightness(1.5) contrast(1.35) drop-shadow(0 0 14px rgba(0, 229, 255, 0.85));
+    clip-path: polygon(0 6%, 100% 2%, 100% 46%, 0 50%, 0 68%, 100% 64%, 100% 100%, 0 100%);
+  }
+  18% {
+    opacity: 0.94;
+    transform: translateX(-4px) skewX(-1.8deg) scale(1.003);
+    filter: brightness(1.3) contrast(1.2) drop-shadow(-2px 0 8px rgba(255, 45, 85, 0.75));
+    clip-path: polygon(0 0, 100% 0, 100% 24%, 0 28%, 0 76%, 100% 72%, 100% 100%, 0 100%);
+  }
+  38% {
+    opacity: 0.98;
+    transform: translateX(3px) skewX(0.9deg);
+    filter: brightness(1.15) drop-shadow(2px 0 6px rgba(0, 229, 255, 0.7));
+    clip-path: polygon(0 0, 100% 0, 100% 58%, 0 54%, 0 86%, 100% 88%, 100% 100%, 0 100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(1px) skewX(-0.4deg);
+    filter: brightness(1.06) contrast(1.05);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  85% {
+    opacity: 1;
+    transform: none;
+    filter: brightness(1.02);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes terminalHoloScanBeam {
+  0% {
+    top: -5%;
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+@keyframes terminalChromaticShift {
+  0% {
+    text-shadow: 3px 0 0 rgba(0, 229, 255, 0.9), -3px 0 0 rgba(255, 45, 85, 0.9);
+  }
+  40% {
+    text-shadow: -1.8px 0 0 rgba(0, 229, 255, 0.8), 1.8px 0 0 rgba(255, 45, 85, 0.8);
+  }
+  80% {
+    text-shadow: 0.6px 0 0 rgba(0, 229, 255, 0.4), -0.6px 0 0 rgba(255, 45, 85, 0.4);
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+@keyframes terminalTelemetryFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.98);
+    pointer-events: none;
+  }
+}
+
+.holo-terminal-glitch {
+  animation: holoTerminalGlitch 340ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  will-change: transform, filter, clip-path, opacity;
+}
+
+.terminal-scan-beam {
+  animation: terminalHoloScanBeam 400ms ease-out forwards;
+}
+
+.terminal-chromatic {
+  animation: terminalChromaticShift 340ms ease-out both;
+}
+
+.terminal-telemetry-badge {
+  animation: terminalTelemetryFade 750ms ease-out forwards;
+}
+
+
