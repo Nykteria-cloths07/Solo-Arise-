@@ -93,6 +93,12 @@ interface SystemContextType {
   markNotificationsRead: () => void;
   addCustomQuest: (quest: Omit<DailyQuest, 'id' | 'completed'>) => void;
   resetAllSystemData: () => void;
+
+  // Anime Awakening Intro System (Play-Once Persistence & Character Selection)
+  selectedAwakeningCharacter: string;
+  setSelectedAwakeningCharacter: (charId: string) => void;
+  completeAwakeningIntro: () => void;
+  replayAwakeningIntro: () => void;
 }
 
 const STORAGE_KEY = 'SOLO_ARISE_SYSTEM_STATE_V1';
@@ -446,19 +452,42 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return localStorage.getItem(`${STORAGE_KEY}_AWAKENED`) === 'true';
   });
 
-  const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(() => {
-    // Always launch cinematic intro on every app opening / daily session
+  const [selectedAwakeningCharacter, setSelectedAwakeningCharacterState] = useState<string>(() => {
     try {
-      const saved = localStorage.getItem(`${STORAGE_KEY}_SETTINGS`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.playIntroOnLaunch === false) {
-          return false;
-        }
+      return localStorage.getItem(`${STORAGE_KEY}_AWAKENING_CHAR`) || 'shadow_hunter';
+    } catch {
+      return 'shadow_hunter';
+    }
+  });
+
+  const [showCinematicIntro, setShowCinematicIntro] = useState<boolean>(() => {
+    try {
+      // REQUIREMENT 9: INTRO MUST PLAY ONLY ONCE on first visit
+      const introCompleted = localStorage.getItem(`${STORAGE_KEY}_INTRO_COMPLETED`);
+      if (introCompleted === 'true') {
+        return false; // Subsequent visits: immediately open normal dashboard!
       }
     } catch {}
-    return true; // Active on every app open!
+    return true; // First visit: display awakening intro
   });
+
+  const setSelectedAwakeningCharacter = (charId: string) => {
+    setSelectedAwakeningCharacterState(charId);
+    try {
+      localStorage.setItem(`${STORAGE_KEY}_AWAKENING_CHAR`, charId);
+    } catch {}
+  };
+
+  const completeAwakeningIntro = () => {
+    try {
+      localStorage.setItem(`${STORAGE_KEY}_INTRO_COMPLETED`, 'true');
+    } catch {}
+    setShowCinematicIntro(false);
+  };
+
+  const replayAwakeningIntro = () => {
+    setShowCinematicIntro(true);
+  };
 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [rankUpEvent, setRankUpEvent] = useState<{ oldRank: HunterRank; newRank: HunterRank } | null>(null);
@@ -1190,6 +1219,10 @@ export const SystemProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         markNotificationsRead,
         addCustomQuest,
         resetAllSystemData,
+        selectedAwakeningCharacter,
+        setSelectedAwakeningCharacter,
+        completeAwakeningIntro,
+        replayAwakeningIntro,
       }}
     >
       {children}

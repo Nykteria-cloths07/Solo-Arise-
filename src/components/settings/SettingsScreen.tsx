@@ -36,6 +36,9 @@ export const SettingsScreen: React.FC = () => {
     currentUser,
     cloudSyncStatus,
     lastCloudSync,
+    selectedAwakeningCharacter,
+    setSelectedAwakeningCharacter,
+    replayAwakeningIntro,
   } = useSystem();
 
   const [showAvatarModal, setShowAvatarModal] = useState<boolean>(false);
@@ -333,62 +336,76 @@ export const SettingsScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. CINEMATIC INTRO & IMMERSION */}
-      <div className="bg-[#080B1F]/90 border border-[#1A2548] rounded-2xl p-6 backdrop-blur-md space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-[#00E5FF]" />
-          <h3 className="font-orbitron font-bold text-base text-white tracking-wide">
-            SOLO LEVELING CINEMATIC EXPERIENCE
-          </h3>
-        </div>
-
-        {/* Toggle Play on Launch */}
+      {/* 3. ANIME AWAKENING CINEMATIC EXPERIENCE */}
+      <div className="bg-[#080B1F]/90 border border-[#1A2548] rounded-2xl p-6 backdrop-blur-md space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-[#141B3B]">
-          <div>
-            <span className="text-xs font-mono font-bold text-white block">
-              Play Anime Animation on Every App Launch
-            </span>
-            <span className="text-[11px] font-mono text-[#8899BB]">
-              Launches the Multiverse apex scan and System Voice narration whenever you open the app daily.
-            </span>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#00E5FF]" />
+            <h3 className="font-orbitron font-bold text-base text-white tracking-wide">
+              ANIME AWAKENING CINEMATIC INTRO
+            </h3>
           </div>
 
           <button
             onClick={() => {
               if (settings.sfxSound) spaceAudio.playTap();
-              updateSettings({ playIntroOnLaunch: settings.playIntroOnLaunch === false ? true : false });
+              replayAwakeningIntro();
             }}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all cursor-pointer ${
-              settings.playIntroOnLaunch !== false
-                ? 'border-[#00E5FF] bg-[#00E5FF]/20 text-[#00E5FF]'
-                : 'border-slate-800 bg-slate-900 text-slate-400'
-            }`}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#4D9FFF] text-black font-orbitron font-black text-xs hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,229,255,0.4)] flex items-center gap-1.5 cursor-pointer"
           >
-            {settings.playIntroOnLaunch !== false ? 'ENABLED' : 'DISABLED'}
+            <Play className="w-3.5 h-3.5 fill-black" />
+            <span>REPLAY AWAKENING INTRO</span>
           </button>
         </div>
 
-        {/* Replay Button */}
-        <div className="flex items-center justify-between">
-          <div>
+        {/* Character Archetype Selection */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
             <span className="text-xs font-mono font-bold text-white block">
-              Watch Double Dungeon Awakening Now
+              Active Awakening Warrior Archetype
             </span>
-            <span className="text-[11px] font-mono text-[#8899BB]">
-              Experience the anime legend scans, cold System Voice, and 0.02s heart-stopping Player selection.
+            <span className="text-[11px] font-mono text-[#00E5FF]">
+              Selects custom visuals, aura, and battle cry roar
             </span>
           </div>
 
-          <button
-            onClick={() => {
-              if (settings.sfxSound) spaceAudio.playTap();
-              setShowCinematicIntro(true);
-            }}
-            className="px-4 py-2 rounded-xl border border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF] font-orbitron font-bold text-xs hover:bg-[#00E5FF]/20 flex items-center gap-1.5 cursor-pointer"
-          >
-            <Play className="w-3.5 h-3.5 fill-[#00E5FF]" />
-            <span>PLAY INTRO</span>
-          </button>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+            {[
+              { id: 'shadow_hunter', name: 'Shadow Monarch', style: 'Sung Jinwoo' },
+              { id: 'saiyan_warrior', name: 'Celestial Saiyan', style: 'Goku UI' },
+              { id: 'cursed_king', name: 'The Honored One', style: 'Gojo Satoru' },
+              { id: 'iron_discipline', name: 'Broken Limiter', style: 'Saitama' },
+            ].map((char) => {
+              const isActive = selectedAwakeningCharacter === char.id;
+              return (
+                <button
+                  key={char.id}
+                  onClick={() => {
+                    if (settings.sfxSound) spaceAudio.playTap();
+                    setSelectedAwakeningCharacter(char.id);
+                  }}
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    isActive
+                      ? 'border-[#00E5FF] bg-[#00E5FF]/15 text-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.3)]'
+                      : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <div className="text-xs font-orbitron font-bold text-white leading-tight">
+                    {char.name}
+                  </div>
+                  <div className="text-[10px] font-mono text-slate-400 pt-0.5">
+                    {char.style}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="p-3 rounded-xl border border-slate-800 bg-[#06081A] text-left text-xs font-mono text-slate-400">
+          <p>
+            ℹ️ <strong>Once-Only Intro Policy:</strong> The awakening sequence is designed to play automatically on first entry to welcome you into your personal system. You can change your warrior archetype or replay the 7-shot power release sequence here anytime.
+          </p>
         </div>
       </div>
 
